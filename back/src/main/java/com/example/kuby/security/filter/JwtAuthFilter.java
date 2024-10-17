@@ -14,12 +14,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.access.SecurityMetadataSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.FilterInvocation;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -38,10 +44,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Value("${global.rate.limit.turn.on}")
     private boolean turnOnRateLimit;
     private final JwtService jwtService;
-    private static final Set<String> permittedUrls = Set.of(
-            "/api/user/**",
-            "/api/user/verify/local"
-    );
+    private final PermitAllUrlConfig permitAllUrlConfig;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -52,11 +55,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         }
 
-        String requestPath = request.getServletPath();
-        System.out.println("Request path: " + requestPath);
-
-        if (isPermittedUrl(requestPath)) {
-            System.out.println("Users request was filtrated");
+        if (permitAllUrlConfig.isPermitAllRequest(request)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -106,17 +105,5 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             ip = request.getRemoteAddr();
         }
         return ip;
-    }
-
-    public static boolean isPermittedUrl(String url) {
-        return permittedUrls.stream().anyMatch(pattern -> matches(pattern, url));
-    }
-
-    private static boolean matches(String pattern, String url) {
-        String regex = pattern
-                .replace("**", ".*")
-                .replace("*", "[^/]*")
-                .replace("/", "\\/");
-        return Pattern.compile("^" + regex + "$").matcher(url).matches();
     }
 }

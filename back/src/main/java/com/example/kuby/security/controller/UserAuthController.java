@@ -2,6 +2,7 @@ package com.example.kuby.security.controller;
 
 import com.example.kuby.exceptions.BasicException;
 import com.example.kuby.foruser.UserEntity;
+import com.example.kuby.foruser.UserRepo;
 import com.example.kuby.security.models.enums.EmailCodeType;
 import com.example.kuby.security.models.enums.Provider;
 import com.example.kuby.security.models.request.ChangePasswordRequest;
@@ -9,7 +10,6 @@ import com.example.kuby.security.models.request.LoginRequest;
 import com.example.kuby.security.models.request.OauthVerificationRequest;
 import com.example.kuby.security.models.request.SignUpRequest;
 import com.example.kuby.security.ratelimiter.WithRateLimitProtection;
-import com.example.kuby.foruser.UserRepo;
 import com.example.kuby.security.service.EmailSubmitCodeService;
 import com.example.kuby.security.service.UserAuthenticationProvider;
 import com.example.kuby.security.service.UserService;
