@@ -127,7 +127,7 @@ public class UserAuthController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
-    @GetMapping("/summit-password-change")
+    @PostMapping("/summit-password-change")
     @WithRateLimitProtection
     public ResponseEntity<?> submitPasswordChange(@RequestParam String code, @RequestParam String email) {
         String newPassword = emailSubmitCodeService.verifyChangePasswordSubmissionEmailCode(code, email);

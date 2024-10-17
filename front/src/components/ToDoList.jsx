@@ -44,10 +44,12 @@ const TodoList = () => {
 
   const updateTask = async (id, updatedTask) => {
     try {
+      const deadline = `${updatedTask.deadLine}:00`.replace("T", " ");
+
       await baseRequest.put(`/api/task/${id}`, null, {
         params: {
           ...updatedTask,
-          deadLine: `${updatedTask.deadLine}:00`, // Append seconds to match the required format
+          deadLine: deadline
         },
         withCredentials: true
       });
@@ -96,7 +98,7 @@ const TodoList = () => {
               />
               <input
                 type="datetime-local"
-                value={task.deadLine.slice(0, -3)} // Remove seconds for datetime-local input
+                value={task.deadLine}
                 onChange={(e) => setTasks(tasks.map(t => t.id === task.id ? { ...t, deadLine: e.target.value } : t))}
               />
               <button type="submit">Save</button>

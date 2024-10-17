@@ -11,19 +11,16 @@ export default defineConfig({
         secure: false,
         configure: (proxy, _options) => {
           proxy.on('proxyReq', (proxyReq, req, _res) => {
-            // Получаем куки из запроса
             const cookies = req.headers.cookie ? req.headers.cookie.split(';') : [];
             let accessToken = '';
             let refreshToken = '';
 
-            // Ищем нужные куки
             cookies.forEach(cookie => {
               const [name, value] = cookie.trim().split('=');
               if (name === 'accessToken') accessToken = value;
               if (name === 'refreshToken') refreshToken = value;
             });
 
-            // Устанавливаем заголовки с токенами
             if (accessToken) {
               proxyReq.setHeader('Authorization', accessToken);
             }

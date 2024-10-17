@@ -69,6 +69,8 @@ public class UserService implements UserDetailsService {
         UserEntity user = userRepo.findByEmailAndProvider(email, Provider.LOCAL).orElseThrow(() ->
                 new BasicException(Map.of("email", "User with such email not found"), HttpStatus.NOT_FOUND));
 
+        System.out.println("New password: " + password);
+
         user.setPassword(encoder.encode(password));
 
         userRepo.save(user);

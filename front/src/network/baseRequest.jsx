@@ -22,7 +22,6 @@ baseRequest.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response.status === 401 && !originalRequest._retry) {
-        console.log("Trying to refresh tokens")
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -39,13 +38,11 @@ baseRequest.interceptors.response.use(
       try {
         const response = await baseRequest.post('/api/user/token/refresh');
         if (response.status === 200) {
-          // Новые токены будут автоматически установлены в куки прокси-сервером
           processQueue(null);
           return baseRequest(originalRequest);
         }
       } catch (refreshError) {
         processQueue(refreshError, null);
-        // Перенаправление на страницу входа
         window.location.href = '/login';
         return Promise.reject(refreshError);
       } finally {

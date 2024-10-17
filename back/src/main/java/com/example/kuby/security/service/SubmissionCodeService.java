@@ -50,7 +50,7 @@ public class SubmissionCodeService {
     }
 
     public Boolean isChangePasswordSubmissionCodeExists(String code, String email) {
-        String value = redisTemplate.opsForValue().get(PASSWORD_CHANGE_SUBMISSION_CODE_PREFIX + code);
+        String value = redisTemplate.opsForValue().getAndDelete(PASSWORD_CHANGE_SUBMISSION_CODE_PREFIX + code);
         return value != null && value.equals(email);
     }
 

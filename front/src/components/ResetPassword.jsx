@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import baseRequest from "../network/baseRequest";
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 
 const ResetPassword = () =>{
     const [formData, setFormData] = useState({
         email: '',
-        password: ''
+        password: '',
+        confirmPassword: ''
       });
+      const navigate = useNavigate();
       const [errors, setErrors] = useState({});
     
       const validateForm = () => {
@@ -21,10 +23,13 @@ const ResetPassword = () =>{
           newErrors.email = 'Email is too big (max size is: 40 symbols)';
         }
         if (formData.password.length < 9 || formData.password.length > 30) {
-          newErrors.password = 'Password must contain from 9 to 30 symbols';
+          newErrors.password = 'Password must contain from 9 to 30 characters';
         }
         if (!passwordRegex.test(formData.password)) {
           newErrors.password = 'Password must contain at least one uppercase letter, one lowercase letter, one number and one special character';
+        }
+        if (formData.password !== formData.confirmPassword) {
+          newErrors.confirmPassword = 'Passwords do not match';
         }
     
         setErrors(newErrors);
@@ -44,9 +49,8 @@ const ResetPassword = () =>{
                 'Content-Type': 'application/json'
               }
             });
-            if (response.status === 201) {
-              console.log('Success');
-              // Здесь можно добавить перенаправление на страницу подтверждения или логина
+            if (response.status === 202) {
+              navigate("/summit-password-change")
             }
           } catch (error) {
             if (error.response && error.response.data) {
@@ -85,6 +89,18 @@ const ResetPassword = () =>{
                 required
               />
               {errors.password && <p>{errors.password}</p>}
+            </div>
+            <div>
+              <label htmlFor="confirmPassword">Repeat Password:</label>
+              <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+              />
+              {errors.confirmPassword && <p>{errors.confirmPassword}</p>}
             </div>
             <button type="submit">Reset password</button>
           </form>
